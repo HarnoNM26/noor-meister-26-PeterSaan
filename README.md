@@ -36,3 +36,4 @@ composer run dev
 
 ## Märgatud puudused
 - Moodul A andmebaasi tabeli tegemisel ei ole kindel, kas source column peab olema `not null` või `nullable`. Jätsin antud välja hetkel `not null`iks.
+- Moodul B faili importimisel on ebaselge, kas fail peab olema kaasatud ka gitis või peab see kasutajal endal olema. Kuna Laravel on juba seadistatud niimoodi, et Storage facade võtab failid teatud kohast, panin selle sinna. Kus see on gitignore'itud.
