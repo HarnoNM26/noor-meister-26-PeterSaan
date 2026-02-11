@@ -9,6 +9,6 @@ Route::get('/health', function (Request $request) {
 });
 
 Route::controller(EnergyReadingController::class)->group(function () {
-    Route::get('/import/json', 'jsonImport');
+    Route::post('/import/json', 'jsonImport');
     Route::get('/readings', 'allReadings');
 });
