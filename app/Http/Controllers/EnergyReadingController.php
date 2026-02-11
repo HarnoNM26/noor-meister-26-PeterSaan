@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EnergyReadingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -39,5 +42,42 @@ class EnergyReadingController extends Controller
         $start = $request->input('start');
         $end = $request->input('end');
         $location = $request->input('location');
+    }
+
+    public function syncPrices(Request $request, EnergyReadingService $energyReadingService)
+    {
+        $request->validate([
+            'location' => 'nullable|in:ee,lv,fi',
+        ]);
+
+        $location = $request->input('location');
+        $startDate = $request->input('start');
+        $endDate = $request->input('end');
+        $syncToday = true;
+
+        if ($startDate !== null && $endDate !== null) {
+            $startDate = date('X-m-d\\TH:i:sp', strtotime($startDate));
+            $endDate = date('X-m-d\\TH:i:sp', strtotime($endDate));
+
+            $isStartFormatValid = Carbon::canBeCreatedFromFormat($startDate, 'X-m-d\\TH:i:sp');
+            $isEndFormatValid = Carbon::canBeCreatedFromFormat($endDate, 'Y-m-d\\TH:i:sp');
+
+            if ($isStartFormatValid === false || $isEndFormatValid === false) {
+                return response([$startDate, $isStartFormatValid, $endDate, $isEndFormatValid]);
+            }
+
+            $syncToday = true;
+        }
+
+        if ($syncToday) {
+            $startDate = Carbon::now()->hour(0)->min(0)->second(0);
+            $startDate = Carbon::tomorrow()->hour(0)->min(0)->second(0);
+        }
+
+        $reqUrl = 'https://dashboard.elering.ee/api/nps/price?start='.$startDate.'&end='.$endDate;
+
+        $response = Http::get($reqUrl);
+
+        $energyReadingService
     }
 }

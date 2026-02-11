@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { dashboard, login, register } from '@/routes';
 import { ref, watchEffect } from 'vue';
+import SyncPrices from '@/components/SyncPrices.vue';
 
 const backendOk = ref(false);
 const dbOk = ref(false);
@@ -25,18 +26,19 @@ watchEffect(async () => {
     >
         <div
             v-if="backendOk === false"
-            class="items-center justify-center text-white"
+            class="justify-center text-white"
         >
             Problem with backend
         </div>
         <div
             v-if="dbOk === false"
-            class="items-center justify-center text-white"
+            class="justify-center text-white"
         >
             Problem with db
         </div>
-        <div v-else class="items-center justify-center text-white">
+        <div v-else class=" justify-center text-white">
             Backend OK
         </div>
+        <SyncPrices />
     </div>
 </template>
