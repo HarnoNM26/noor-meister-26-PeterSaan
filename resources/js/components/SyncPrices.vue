@@ -1,5 +1,30 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const loading = ref(false);
+const startDate = ref<Date | null>(null);
+const endDate = ref<Date | null>(null);
+const location = ref('ee');
+async function syncPrices() {
+    loading.value = true;
+    const fetchBody = {
+        'startDate': startDate.value,
+        'endDate': endDate.value,
+        'location': location.value
+    };
+
+    try {
+        const res = await fetch('http://localhost:8000/api/sync/prices', {
+            method: 'POST',
+            body: fetchBody
+        });
+    } catch (e) {
+        loading.value = false;
+        return;
+    }
+
+    loading.value = false;
+}
 </script>
 
 <template>
@@ -9,19 +34,24 @@ import { Form } from '@inertiajs/vue3';
         <div
             class="inline-flex flex-col items-center justify-center text-white"
         >
-            <Form
-                class="rounded-xl border border-white p-3"
-                action="/api/sync/prices"
-                method="post"
-                #default="{ processing }"
-            >
+            <form class="rounded-xl border border-white p-3">
                 <div class="mb-5 flex flex-col">
                     <label for="start">Start date:</label>
-                    <input id="start" type="datetime-local" name="startDate" />
+                    <input
+                        id="start"
+                        type="datetime-local"
+                        name="startDate"
+                        v-model="startDate"
+                    />
                 </div>
                 <div class="mb-5 flex flex-col">
                     <label for="end">End date:</label>
-                    <input id="end" type="datetime-local" name="endDate" />
+                    <input
+                        id="end"
+                        type="datetime-local"
+                        name="endDate"
+                        v-model="endDate"
+                    />
                 </div>
                 <div class="mb-8 flex">
                     <input
@@ -30,23 +60,37 @@ import { Form } from '@inertiajs/vue3';
                         type="radio"
                         name="location"
                         checked
+                        v-model="location"
                     />
                     <label class="me-3" for="ee">EE</label>
-                    <input id="lv" value="lv" type="radio" name="location" />
+                    <input
+                        id="lv"
+                        value="lv"
+                        type="radio"
+                        name="location"
+                        v-model="location"
+                    />
                     <label class="me-3" for="lv">LV</label>
-                    <input id="fi" value="fi" type="radio" name="location" />
+                    <input
+                        id="fi"
+                        value="fi"
+                        type="radio"
+                        name="location"
+                        v-model="location"
+                    />
                     <label class="me-3" for="fi">FI</label>
                 </div>
                 <div class="flex justify-center">
                     <button
                         class="cursor-pointer rounded-full border border-white px-2 py-1 text-center hover:border-transparent hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:border-transparent disabled:bg-gray-500 disabled:text-[#0a0a0a]"
                         type="submit"
-                        :disabled="processing"
+                        :disabled="loading"
+                        @click="syncPrices"
                     >
-                        {{ processing ? 'Syncing...' : 'Sync prices' }}
+                        {{ loading ? 'Syncing...' : 'Sync prices' }}
                     </button>
                 </div>
-            </Form>
+            </form>
         </div>
     </div>
 </template>
