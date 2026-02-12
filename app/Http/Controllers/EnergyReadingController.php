@@ -69,35 +69,28 @@ class EnergyReadingController extends Controller
     public function syncPrices(Request $request)
     {
         $request->validate([
+            'startDate' => 'nullable|date|date_format:Y-m-d\TH:i:sp|before:endDate',
+            'endDate' => 'nullable|date|date_format:Y-m-d\TH:i:sp|after:startDate',
             'location' => 'nullable|in:ee,lv,fi',
         ]);
 
         $location = $request->input('location');
-        $startDate = $request->input('start');
-        $endDate = $request->input('end');
-        $syncToday = true;
-
-        if ($startDate !== null && $endDate !== null) {
-            $startDate = date('X-m-d\\TH:i:sp', strtotime($startDate));
-            $endDate = date('X-m-d\\TH:i:sp', strtotime($endDate));
-
-            $isStartFormatValid = Carbon::canBeCreatedFromFormat($startDate, 'X-m-d\\TH:i:sp');
-            $isEndFormatValid = Carbon::canBeCreatedFromFormat($endDate, 'Y-m-d\\TH:i:sp');
-
-            if ($isStartFormatValid === false || $isEndFormatValid === false) {
-                return response([$startDate, $isStartFormatValid, $endDate, $isEndFormatValid]);
-            }
-
-            $syncToday = true;
-        }
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $syncToday = ($startDate === null | $endDate === null);
 
         if ($syncToday) {
-            $startDate = Carbon::now()->hour(0)->min(0)->second(0);
-            $startDate = Carbon::tomorrow()->hour(0)->min(0)->second(0);
+            $startDate = Carbon::today()->hour(0)->minute(0)->second(0);
+            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0);
+            $startDate = date('Y-m-d\TH:i:sp', strtotime($startDate));
+            $endDate = date('Y-m-d\TH:i:sp', strtotime($endDate));
         }
+
+        $startDate = urlencode($startDate);
+        $endDate = urlencode($endDate);
 
         $reqUrl = 'https://dashboard.elering.ee/api/nps/price?start='.$startDate.'&end='.$endDate;
 
-        $response = Http::get($reqUrl);
+        $response = Http::get($reqUrl)[data];
     }
 }
