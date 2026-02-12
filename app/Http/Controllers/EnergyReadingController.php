@@ -44,7 +44,7 @@ class EnergyReadingController extends Controller
         $location = $request->input('location');
     }
 
-    public function syncPrices(Request $request, EnergyReadingService $energyReadingService)
+    public function syncPrices(Request $request)
     {
         $request->validate([
             'location' => 'nullable|in:ee,lv,fi',
@@ -77,7 +77,5 @@ class EnergyReadingController extends Controller
         $reqUrl = 'https://dashboard.elering.ee/api/nps/price?start='.$startDate.'&end='.$endDate;
 
         $response = Http::get($reqUrl);
-
-        $energyReadingService
     }
 }
