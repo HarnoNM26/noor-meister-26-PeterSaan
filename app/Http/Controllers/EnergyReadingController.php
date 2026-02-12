@@ -76,14 +76,14 @@ class EnergyReadingController extends Controller
         $amountOfMatches = count($matchingReadings->get());
 
         if ($amountOfMatches === 0) {
-            return response(status: 404);
+            return response(status: 404)->json(['response' => 'No readings were found']);
         }
 
         try {
             $matchingReadings->delete();
             return response()->json(['amount' => $amountOfMatches]);
         } catch (\Exception $e) {
-            return response(status: 500);
+            return response(status: 500)->json(['response' => 'Some kind of server error']);
         }
     }
 
