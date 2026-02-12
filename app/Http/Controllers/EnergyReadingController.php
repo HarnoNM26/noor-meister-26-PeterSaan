@@ -114,7 +114,7 @@ class EnergyReadingController extends Controller
 
         $response = json_decode($response, true);
         foreach ($response['data'][$location] as $locationData) {
-            $nrgReading = new EnergyReading();
+            $nrgReading = new EnergyReading;
             $nrgReading->timestamp = date('Y-m-d\TH:i:sp', $locationData['timestamp']);
             $nrgReading->location = $location;
             $nrgReading->price_eur_mwh = $locationData['price'];

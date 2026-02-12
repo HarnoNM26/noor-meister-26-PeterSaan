@@ -8,15 +8,15 @@ const location = ref('ee');
 async function syncPrices() {
     loading.value = true;
     const fetchBody = {
-        'startDate': startDate.value,
-        'endDate': endDate.value,
-        'location': location.value
+        startDate: startDate.value,
+        endDate: endDate.value,
+        location: location.value,
     };
 
     try {
         const res = await fetch('http://localhost:8000/api/sync/prices', {
             method: 'POST',
-            body: fetchBody
+            body: fetchBody,
         });
     } catch (e) {
         loading.value = false;
