@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\EnergyReading;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -81,6 +80,7 @@ class EnergyReadingController extends Controller
 
         try {
             $matchingReadings->delete();
+
             return response()->json(['amount' => $amountOfMatches]);
         } catch (\Exception $e) {
             return response(status: 500)->json(['response' => 'Some kind of server error']);
@@ -95,16 +95,14 @@ class EnergyReadingController extends Controller
             'location' => 'nullable|in:ee,lv,fi',
         ]);
 
-        $location = $request->input('location');
+        $location = $request->input('location') ?? 'ee';
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
         $syncToday = ($startDate === null | $endDate === null);
 
         if ($syncToday) {
-            $startDate = Carbon::today()->hour(0)->minute(0)->second(0);
-            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0);
-            $startDate = date('Y-m-d\TH:i:sp', strtotime($startDate));
-            $endDate = date('Y-m-d\TH:i:sp', strtotime($endDate));
+            $startDate = Carbon::today()->hour(0)->minute(0)->second(0)->format('Y-m-d\TH:i:sp');
+            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0)->format('Y-m-d\TH:i:sp');
         }
 
         $startDate = urlencode($startDate);
@@ -112,6 +110,21 @@ class EnergyReadingController extends Controller
 
         $reqUrl = 'https://dashboard.elering.ee/api/nps/price?start='.$startDate.'&end='.$endDate;
 
-        $response = Http::get($reqUrl)[data];
+        $response = file_get_contents($reqUrl);
+        if (empty($response)) {
+            return response(status: 404)->json(['error' => 'PRICE_API_UNAVAILABLE']);
+        }
+
+        $response = json_decode($response, true);
+        foreach ($response['data'][$location] as $locationData) {
+            $nrgReading = new EnergyReading();
+            $nrgReading->timestamp = date('Y-m-d\TH:i:sp', $locationData['timestamp']);
+            $nrgReading->location = $location;
+            $nrgReading->price_eur_mwh = $locationData['price'];
+            $nrgReading->source = 'API';
+            $nrgReading->saveOrFail();
+        }
+
+        return response()->json();
     }
 }
