@@ -11,4 +11,8 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
+Route::get('clear', function () {
+    return Inertia::render('Clear');
+})->name('clear');
+
 require __DIR__.'/settings.php';

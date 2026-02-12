@@ -67,6 +67,26 @@ class EnergyReadingController extends Controller
         }
     }
 
+    public function deleteReadings(Request $request)
+    {
+        $request->validate(['source' => 'required|in:API,UPLOAD']);
+
+        $deleteSource = $request->input('source');
+        $matchingReadings = EnergyReading::where('source', $deleteSource);
+        $amountOfMatches = count($matchingReadings->get());
+
+        if ($amountOfMatches === 0) {
+            return response(status: 404);
+        }
+
+        try {
+            $matchingReadings->delete();
+            return response()->json(['amount' => $amountOfMatches]);
+        } catch (\Exception $e) {
+            return response(status: 500);
+        }
+    }
+
     public function syncPrices(Request $request)
     {
         $request->validate([
