@@ -17,11 +17,11 @@ import { Form } from '@inertiajs/vue3';
             >
                 <div class="mb-5 flex flex-col">
                     <label for="start">Start date:</label>
-                    <input id="start" type="date" name="start" />
+                    <input id="start" type="datetime-local" name="startDate" />
                 </div>
                 <div class="mb-5 flex flex-col">
                     <label for="end">End date:</label>
-                    <input id="end" type="date" name="end" />
+                    <input id="end" type="datetime-local" name="endDate" />
                 </div>
                 <div class="mb-8 flex">
                     <input id="ee" value="ee" type="radio" name="location" checked />
