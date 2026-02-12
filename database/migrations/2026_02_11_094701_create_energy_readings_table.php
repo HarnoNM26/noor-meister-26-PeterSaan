@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('timestamp');
             $table->string('location');
-            $table->integer('price_eur_mwh')->nullable();
+            $table->float('price_eur_mwh')->nullable();
             $table->enum('source', ['UPLOAD', 'API']);
             $table->timestamps();
         });
