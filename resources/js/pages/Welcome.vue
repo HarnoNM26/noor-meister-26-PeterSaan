@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { dashboard, login, register } from '@/routes';
+import { Head } from '@inertiajs/vue3';
 import { ref, watchEffect } from 'vue';
 import SyncPrices from '@/components/SyncPrices.vue';
 
@@ -24,21 +23,13 @@ watchEffect(async () => {
     <div
         class="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]"
     >
-        <div
-            v-if="backendOk === false"
-            class="justify-center text-white"
-        >
+        <div v-if="backendOk === false" class="justify-center text-white">
             Problem with backend
         </div>
-        <div
-            v-if="dbOk === false"
-            class="justify-center text-white"
-        >
+        <div v-if="dbOk === false" class="justify-center text-white">
             Problem with db
         </div>
-        <div v-else class=" justify-center text-white">
-            Backend OK
-        </div>
+        <div v-else class="justify-center text-white">Backend OK</div>
         <SyncPrices />
     </div>
 </template>

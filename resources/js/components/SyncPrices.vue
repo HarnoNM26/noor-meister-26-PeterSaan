@@ -13,7 +13,7 @@ import { Form } from '@inertiajs/vue3';
                 class="rounded-xl border border-white p-3"
                 action="/api/sync/prices"
                 method="post"
-                #default="{ errors, processing }"
+                #default="{ processing }"
             >
                 <div class="mb-5 flex flex-col">
                     <label for="start">Start date:</label>
@@ -24,7 +24,13 @@ import { Form } from '@inertiajs/vue3';
                     <input id="end" type="datetime-local" name="endDate" />
                 </div>
                 <div class="mb-8 flex">
-                    <input id="ee" value="ee" type="radio" name="location" checked />
+                    <input
+                        id="ee"
+                        value="ee"
+                        type="radio"
+                        name="location"
+                        checked
+                    />
                     <label class="me-3" for="ee">EE</label>
                     <input id="lv" value="lv" type="radio" name="location" />
                     <label class="me-3" for="lv">LV</label>
@@ -33,7 +39,7 @@ import { Form } from '@inertiajs/vue3';
                 </div>
                 <div class="flex justify-center">
                     <button
-                        class="cursor-pointer rounded-full border border-white py-1 px-2 text-center hover:bg-white hover:text-black hover:border-transparent disabled:cursor-not-allowed disabled:bg-gray-500 disabled:border-transparent disabled:text-[#0a0a0a]"
+                        class="cursor-pointer rounded-full border border-white px-2 py-1 text-center hover:border-transparent hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:border-transparent disabled:bg-gray-500 disabled:text-[#0a0a0a]"
                         type="submit"
                         :disabled="processing"
                     >

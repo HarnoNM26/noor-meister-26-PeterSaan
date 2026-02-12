@@ -60,6 +60,7 @@ class EnergyReadingController extends Controller
 
         try {
             $readings = EnergyReading::where('location', $location)->whereBetween('timestamp', [$startDate, $endDate])->get();
+
             return response($readings);
         } catch (\Exception $e) {
             throw $e;
