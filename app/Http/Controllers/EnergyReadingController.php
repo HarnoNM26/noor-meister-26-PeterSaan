@@ -46,15 +46,12 @@ class EnergyReadingController extends Controller
 
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-        $location = $request->input('location');
+        $location = $request->input('location') ?? 'ee';
         $today = ($startDate === null | $endDate === null);
 
         if ($today) {
-            $startDate = Carbon::today()->hour(0)->minute(0)->second(0);
-            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0);
-        }
-        if ($location === null) {
-            $location = 'ee';
+            $startDate = Carbon::today()->hour(0)->minute(0)->second(0)->format('Y-m-d\TH:i:sp');
+            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0)->format('Y-m-d\TH:i:sp');
         }
 
         try {
