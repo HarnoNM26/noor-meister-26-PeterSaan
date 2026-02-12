@@ -10,6 +10,7 @@ Route::get('/health', function (Request $request) {
 
 Route::controller(EnergyReadingController::class)->group(function () {
     Route::post('/import/json', 'jsonImport');
-    Route::get('/readings', 'allReadings');
     Route::post('/sync/prices', 'syncPrices');
+    Route::get('/readings', 'allReadings');
+    Route::delete('/readings', 'deleteReadings');
 });
