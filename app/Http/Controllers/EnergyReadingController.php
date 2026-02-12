@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EnergyReadingService;
+use App\Models\EnergyReading;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -39,9 +39,31 @@ class EnergyReadingController extends Controller
 
     public function allReadings(Request $request)
     {
-        $start = $request->input('start');
-        $end = $request->input('end');
+        $request->validate([
+            'startDate' => 'nullable|date|date_format:Y-m-d\TH:i:sp|before:endDate',
+            'endDate' => 'nullable|date|date_format:Y-m-d\TH:i:sp|after:startDate',
+            'location' => 'nullable|in:ee,lv,fi',
+        ]);
+
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
         $location = $request->input('location');
+        $today = ($startDate === null | $endDate === null);
+
+        if ($today) {
+            $startDate = Carbon::today()->hour(0)->minute(0)->second(0);
+            $endDate = Carbon::tomorrow()->hour(0)->minute(0)->second(0);
+        }
+        if ($location === null) {
+            $location = 'ee';
+        }
+
+        try {
+            $readings = EnergyReading::where('location', $location)->whereBetween('timestamp', [$startDate, $endDate])->get();
+            return response($readings);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function syncPrices(Request $request)
